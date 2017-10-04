@@ -1,0 +1,51 @@
+---
+title: "ST3233 Tutorial 1 Solution"
+author: "Chen Penghao (A0122017Y)"
+date: "28 August 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+### Preliminary:
+```{r}
+library(fpp2)
+```
+
+## Question 1: plot the graph
+```{r}
+fmri_data <- read.table("fmri.dat.txt")
+fmri_ts <- ts(fmri_data[,2], deltat = 2, frequency=0.5, start=1)
+
+plot(fmri_ts, xlab="Time (seconds)", ylab="Signal Intensity",
+     main="MRI (Cortex)", col="coral3")
+abline(v=seq(0, 256, by=32), col="grey", lty=2)
+```
+
+## Question 2: Discussion
+The data exhibits strong seasonal patterns every 32 seconds, which corresponds to the time where stimualtes are set in or taken away. 
+
+
+## Question 3: Season plot
+```{r}
+seasonplot(fmri_ts, s=32, main="MRI Season Plot", xlab="Season", ylab="Signal Intensity", 
+           col=1:4, year.labels.left=TRUE, year.labels=TRUE)
+
+legend("topright",legend=paste("Period ", 1:4, sep=""), col=1:4, lwd=TRUE)
+```
+
+
+### Question 4: Seasonal subseries plot
+```{r}
+fmri_ts = ts(fmri_data[,2], start=1, frequency=8)
+monthplot(fmri_ts, main="MRI Seasonal Subseries Plot", ylab="Signal Intensity",
+          xlab="Season", col.base='blue')
+```
+
+# Matching Time Plots to Lag Plots
+* The data has no apparent trend as a whole.
+* It exhibits some seasonal patterns especially when time is less than 200 seconds, where x reaches the crest in approximately equal time interval.
+* The value of x reaches its peak when time is approximately 270, and a clear downward trend is observed when 270 < time < 370.
+* Overall x would be more similar to the pattern of a Random Walk model, where each time the change in value of x would be correlated to the previous one plus a residual that follows the distribution of a White Noise.
+* The value of y exhibits characteristics of White Noise.
+
+* Hence a would be referring to y, where b is referring to x.

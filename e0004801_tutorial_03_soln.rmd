@@ -1,0 +1,144 @@
+---
+title: "ST3233 Tutorial 3 Solution"
+author: "Chen Penghao"
+date: "11 Sept 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+###Read the data and state the start and end dates
+```{r}
+instant_noodles_data <- read.table("instant_noodles.txt", header = TRUE)
+unadjusted_price = ts(instant_noodles_data[,2], start = 1993, frequency = 12)
+pr_1993 = ts(instant_noodles_data[,3], start = 1993, frequency = 12)
+cpi = ts(instant_noodles_data[,4], start = 1993, frequency = 12)
+```
+
+Start date: Jan 1993
+
+End date: Apr 2017
+
+According to the information, we have:
+
+```{r}
+past_cpi = window(cpi, start=c(2016, 5))
+forecast_cpi = past_cpi * 1.01
+```
+
+###Forecast using benchmark methods
+
+####Random Walk with Drift
+```{r}
+library(fpp2)
+instant_rwf <- rwf(pr_1993, 12, drift=TRUE)
+residual_rwf <- instant_rwf$residuals
+checkresiduals(instant_rwf, test=FALSE)
+plot (instant_rwf,main =" Price of Instant Noodles Random Walk with Drift", xlab =" Year ",
+PI= FALSE )
+```
+
+####Average Method
+```{r}
+library(fpp2)
+instant_meanf <- meanf(pr_1993, 12,)
+residual_meanf <- instant_meanf$residuals
+checkresiduals(instant_meanf, test=FALSE)
+plot (instant_meanf,main =" Price of Instant Noodles Using Mean Method", xlab =" Year ",
+PI= FALSE )
+```
+
+####Naive Method
+```{r}
+library(fpp2)
+instant_naive <- naive(pr_1993, 12)
+residual_naive <- instant_naive$residuals
+checkresiduals(instant_naive, test=FALSE)
+plot (instant_naive,main =" Price of Instant Noodles Using Naive Method", xlab =" Year ",
+PI= FALSE )
+```
+
+####Seasonal naive
+```{r}
+library(fpp2)
+instant_snaive <- snaive(pr_1993, 12)
+residual_snaive <- instant_snaive$residuals
+checkresiduals(instant_snaive, test=FALSE)
+plot (instant_snaive,main =" Price of Instant Noodles Using Seasonal Naive Method", xlab =" Year ",
+PI= FALSE )
+```
+
+
+###Forecast using unadjusted prices
+####Random Walk with Drift
+```{r}
+library(fpp2)
+unadj_rwf <- rwf(unadjusted_price, 12, drift=TRUE)
+residual_rwf <- unadj_rwf$residuals
+checkresiduals(unadj_rwf, test=FALSE)
+```
+
+####Average Method
+```{r}
+library(fpp2)
+unadj_meanf <- meanf(unadjusted_price, 12,)
+residual_meanf <- unadj_meanf$residuals
+checkresiduals(unadj_meanf, test=FALSE)
+```
+
+####Naive Method
+```{r}
+library(fpp2)
+unadj_naive <- naive(unadjusted_price)
+residual_naive <- unadj_naive$residuals
+checkresiduals(unadj_naive, test=FALSE)
+```
+
+####Seasonal naive
+```{r}
+library(fpp2)
+unadj_snaive <- snaive(unadjusted_price, 12)
+residual_snaive <- unadj_snaive$residuals
+checkresiduals(unadj_snaive, test=FALSE)
+```
+
+### US GDP
+```{r}
+transf_gdp_3 <- BoxCox(usgdp, lambda = 3)
+transf_gdp_2 <- BoxCox(usgdp, lambda = 2)
+transf_gdp_1 <- BoxCox(usgdp, lambda = 1)
+transf_gdp_log <- BoxCox(usgdp, lambda = 0)
+transf_gdp_i1 <- BoxCox(usgdp, lambda = -1)
+transf_gdp_i2 <- BoxCox(usgdp, lambda = -2)
+plot(transf_gdp_3)
+plot(transf_gdp_2)
+plot(transf_gdp_1)
+plot(transf_gdp_log)
+plot(transf_gdp_i1)
+plot(transf_gdp_i2)
+```
+
+Log transformation is the most suitable.
+
+
+```{r}
+forecast_gdp_log <- BoxCox(usgdp, lambda = 0)
+forecast_mean <- rwf(forecast_gdp_log, drift=TRUE)$mean
+back_transform_median_log <- exp(forecast_mean)
+plot(usgdp, col=1)
+lines(back_transform_median_log, col=2)
+```
+
+```{r}
+drift_param <- BoxCox.lambda(usgdp)
+```
+
+drift parameter = 0.36635
+
+```{r}
+forecast_gdp <- BoxCox(usgdp, lambda = drift_param)
+forecast_mean <- rwf(forecast_gdp, drift=TRUE)$mean
+back_transform_median <- forecast_mean ^ (1/drift_param)
+plot(usgdp, include =200)
+lines(back_transform_median, col=5)
+```

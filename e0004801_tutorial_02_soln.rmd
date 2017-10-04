@@ -1,0 +1,46 @@
+---
+title: "ST3233 Tutorial 2 Solution"
+author: "Chen Penghao"
+date: "4 Sept 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Plotting varve data
+
+```{r}
+varve_data <- read.table("varve.dat.txt")
+ts.plot(varve_data,
+        main = "Time Plot of Varve Data",
+        xlab = "time/years",
+        ylab = "varve thickness")
+```
+
+### Comment on the plot:
+
+There is not much overall trends and seasonal patterns. However the varve thickness do have especially sharp spikes at around years 360 and 680. The variance of the data is not stable across the 634 years.
+
+# Transformation of data
+```{R}
+varve_u <- diff(log(ts(varve_data)))
+plot(varve_u,
+     main = "Time Plot of log difference transformation",
+     xlab = "time/years",
+     ylab = "varve thickness")
+```
+
+### Comment on the plot:
+
+The data are anti-correlated with a strong negative correlation between. The variance of the data is more uniform across the data points. The plot is similar to a white noise distribution.
+
+```{r}
+lag.plot(varve_u, lag=6)
+acf(varve_u, main="ACF plot for log diff transofrmed varve data")
+```
+
+### Comment on the plot:
+
+There is no clear correlation between plots with lag 1 to lag 6, and the acf correlation are all within 5% confidence interval for lag > 2. We should not consider it as a white noise since at lag=2, the correlation falls too far out of the accepted range.
+
+
