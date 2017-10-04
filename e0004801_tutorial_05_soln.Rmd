@@ -1,0 +1,74 @@
+---
+title: "ST3233 Tutorial 5 Solution"
+author: "Chen Penghao"
+date: "2 Oct 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Company X Data
+
+$y_t = T_t + S_t + R_t$
+
+# 1. Estimate 
+
+```{r}
+library(fpp2)
+ff <- c(1/3, 1/3, 1/3)
+x_data <- read.table("company_X.txt")
+x_ts <- ts(x_data, start = 1967, frequency = 13)
+
+x_d <- decompose(x_ts, type="additive", filter=ff)
+plot(x_d)
+
+x_trend <- x_d$trend
+plot(x_ts)
+lines(x_trend, col = 'red')
+
+x_seasonadj <- seasadj(x_d)
+lines(x_seasonadj, col = 'blue')
+```
+
+
+
+# Plastics Data
+```{r}
+ts.plot(plastics)
+```
+There is seasonal pattern across each time period where the trend first goes up, reaches a peak, and then eventually goes down. The overall trend is going towards upwards.
+
+```{r}
+p_d <- decompose(plastics, type = "multiplicative")
+p_trend <- trendcycle(p_d)
+p_ss <- seasonal(p_d)
+plot(p_d)
+plot(p_trend, col = 'red')
+plot(p_ss, col = 'blue')
+
+p_sa <- seasadj(p_d)
+plot(plastics)
+lines(p_sa, col = 'green')
+
+p_copy <- plastics
+p_copy[35] = 0
+plot(p_copy)
+p_sa2 <- seasadj(decompose(p_copy))
+lines(p_sa2, col = 'green')
+
+p_copy2 <- plastics
+p_copy2[60] = 0
+plot(p_copy2)
+p_sa3 <- seasadj(decompose(p_copy2))
+lines(p_sa3, col = 'green')
+```
+The seasonally adjusted line appears more jerky and the outlier does affect the shape of the seasonally adjusted line.
+Having an outlier at the end is different from having one in the middle when using classical decomposition method.
+
+# Theoretical Questions
+
+## Question 1
+
+First iteration: $y'_t = \frac{1}{5}\left (y_{t-2} + y_{t-1} + y_t + y_{t+1} + y_{t+2} \right)$
+
+Second iteration: $y''_t = \frac{1}{3}\left (y'_{t-1} + y'_t + y'_{t+1} \right)$
