@@ -1,0 +1,51 @@
+---
+title: "ST3233 Tutorial 1 Solution"
+author: "Chen Penghao (A0122017Y)"
+date: "28 August 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+### Preliminary:
+```{r}
+library(fpp2)
+```
+
+## Question 1: plot the graph
+```{r}
+x_data <- read.table("company_X.txt")
+x_ts <- ts(x_data, start = 1967, frequency =13)
+plot(x_ts, ylab = "sales", xlab = "year", main = "Company X Sales")
+```
+There is strong seasonal effect, no obvious overall trends or cycles.
+
+## Question 2: Extract data
+```{r}
+x_ts_2 <- window(x_ts, start = c(1967,5), deltat = 1) #every year
+plot(x_ts, ylab = "sales", xlab = "year", main = "Company X Sales")
+lines(x_ts_2, col = 'red', type = 'b')
+legend('topright', col = c('red', 'black'), lty = 1, pch = c(1,NA), legend = c("Subseries", "Full"), cex = 0.8)
+```
+
+
+
+## Question 3: Which season have changed the most, and which the least?
+```{r}
+monthplot(x_ts)
+```
+
+We wish to see which season has changed the most, we make seasonal subseries plot to single out every season
+
+### Question 4: Seismic Activity
+```{r}
+ea <- read.table("earthquake.txt", skip = 1)
+ea <- ts(ea, frequency = 1)
+plot(ea)
+ea1 <- window(ea, end = 1024)
+ea2 <- window(ea, start = 1025)
+boxplot(ea1, ylim = c(-0.5, 0.5), main = "Period 1")
+boxplot(ea2, ylim = c(-0.5,0.5), main = "Period 2")
+```
+We can see that the variability of the two portions differs drastically.
+
+

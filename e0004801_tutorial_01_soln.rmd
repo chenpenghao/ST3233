@@ -36,7 +36,7 @@ legend("topright",legend=paste("Period ", 1:4, sep=""), col=1:4, lwd=TRUE)
 
 ### Question 4: Seasonal subseries plot
 ```{r}
-fmri_ts = ts(fmri_data[,2], start=1, frequency=8)
+fmri_ts = ts(fmri_data[,2], start=1, frequency=32)
 monthplot(fmri_ts, main="MRI Seasonal Subseries Plot", ylab="Signal Intensity",
           xlab="Season", col.base='blue')
 ```
